@@ -3,6 +3,7 @@ from collections import OrderedDict
 import util.util as util
 from .base_model import BaseModel
 from . import networks
+import torch
 
 
 class SoccerModel(BaseModel):
@@ -18,6 +19,12 @@ class SoccerModel(BaseModel):
                                             opt.which_model_netG, opt.norm, not opt.no_dropout, opt.init_type, self.gpu_ids)
         self.load_network(self.seg_netG, 'G', 'seg_latest')
         self.load_network(self.detec_netG, 'G', 'detec_latest')
+        # self.seg_netG = torch.jit.load('/home/kikaitech/Public/manhnd/football/pytorch-two-GAN/seg_netG.pt', map_location='cuda')
+        # print("----------------- Manh dep trai", self.seg_netG.code)
+        # Save the jit model.
+        torch.jit.script(self.detec_netG).save('detec_netG.pt')
+        torch.jit.script(self.seg_netG).save('seg_netG.pt')
+
         print('Warning: continue_train is not supported')
         print('---------- Networks initialized -------------')
         networks.print_network(self.seg_netG)
