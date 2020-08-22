@@ -13,14 +13,13 @@ class SoccerModel():
     def initialize(self, opt):
         assert(not opt.isTrain)
         self.gpu_ids = opt.gpu_ids
+        self.Tensor = torch.cuda.FloatTensor if self.gpu_ids else torch.Tensor
         self.save_dir = os.path.join(opt.checkpoints_dir, opt.name)
 
         self.seg_netG = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf,
                                           opt.which_model_netG, opt.norm, not opt.no_dropout, opt.init_type, self.gpu_ids)
         self.detec_netG = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf,
                                             opt.which_model_netG, opt.norm, not opt.no_dropout, opt.init_type, self.gpu_ids)
-        self.load_network(self.seg_netG, 'G', 'seg_latest')
-        self.load_network(self.detec_netG, 'G', 'detec_latest')
         ## seg_G
         self.save_seg = '%s_net_%s.pth' % ('seg_latest', 'G')
         self.save_seg_path = os.path.join(self.save_dir, self.save_seg)
